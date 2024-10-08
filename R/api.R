@@ -1,37 +1,73 @@
-install.packages("httr")
-install.packages("jsonlite")
-install.packages("tm")  # Para análisis de texto si quieres usarlo
-
-library(httr)
-library(jsonlite)
-library(tm)
+library(httr2)
 
 
-# Define la URL base del API
-base_url <- "http://data.riksdagen.se/dokumentlista/"
+make_api_call <- function(url) url |> request() |> req_perform()
 
 
-# Define los parámetros de la solicitud (ejemplo: búsqueda de "budget" y 10 resultados)
-query <- "budget"  # La palabra clave que quieres buscar
-limit <- 10        # Límite de resultados
+#' Searches documents in the Riksdagen database
+#'
+#' @param query Search query (e.g., "budget").
+#'
+#' @return data.frame
+#' @export
+#' @examples
+#' result <- searchdocs(query = "budget")
+searchdocs <- function(query) {
 
-# Construye la URL completa con los parámetros
-url <- paste0(base_url, "?sok=", query, "&doktyp=&utformat=json&sort=datum&sortorder=desc&antal=", limit)
-
-# Realiza la solicitud GET
-response <- GET(url)
-
-get_list<- function(query, limit) {
   base_url <- "http://data.riksdagen.se/dokumentlista/"
-  url <- paste0(base_url, "?sok=", query, "&doktyp=&utformat=json&sort=datum&sortorder=desc&antal=", limit)
-  response <- GET(url)
+
+  include <- c(
+    "traff", "domain", "database", "datum", "id", "rdrest", "slutdatum",
+    "rddata", "plats", "klockslag", "publicerad", "systemdatum", "undertitel",
+    "kalla", "kall_id", "dok_id", "inlamnad", "motionstid", "tilldelat", "lang",
+    "titel", "dokumentnamn", "score", "url"
+    )
+
+
+  clean_document <- function(document) {
+    document <- document[include]
+    nullmask <- as.vector(sapply(document, is.null))
+    document[nullmask] <- NA
+    return(document)
+  }
+
+
+  url <- paste0(
+    base_url,
+    "?sok=",
+    query,
+    "&utformat=json&sort=datum&sortorder=desc"
+    )
+
+  # Extract list of documents from json response.
+  jsonresp <- url |> make_api_call() |> resp_body_json()
+  docs <- jsonresp$dokumentlista$dokument
+
+  # Return data.frame
+  t(data.frame(sapply(docs, clean_document)))
 }
 
-get_document<- function (document_id ) {
-  base_url<-"https://data.riksdagen.se/dokument/"
-  url<-paste0(base_url, document_id)
-  response<- GET(url)
+
+
+#' Retrieves document content as HTML string
+#'
+#' @param document_id Document id
+#'
+#' @return character
+#' @export
+#' @references https://www.riksdagen.se/sv/dokument-och-lagar/riksdagens-oppna-data/anvandarstod/sa-fungerar-dokument-id/
+#' @examples
+#' document <- get_document("GZ01MJU21")
+getdocument <- function (document_id) {
+  base_url <- "https://data.riksdagen.se/dokument/"
+  url <- paste0(base_url, document_id)
+  make_api_call(url)
 }
+
+
+
+
+
 
 
 
