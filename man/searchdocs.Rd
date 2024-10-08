@@ -2,7 +2,7 @@
 % Please edit documentation in R/api.R
 \name{searchdocs}
 \alias{searchdocs}
-\title{Searches documents in the Riksdagen database.}
+\title{Searches documents in the Riksdagen database}
 \usage{
 searchdocs(query)
 }
@@ -13,7 +13,7 @@ searchdocs(query)
 data.frame
 }
 \description{
-Searches documents in the Riksdagen database.
+Searches documents in the Riksdagen database
 }
 \examples{
 result <- searchdocs(query = "budget")
