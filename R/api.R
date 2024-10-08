@@ -23,14 +23,12 @@ searchdocs <- function(query) {
     "titel", "dokumentnamn", "score", "url"
     )
 
-
-  clean_document <- function(document) {
+  cleandoc <- function(document) {
     document <- document[include]
     nullmask <- as.vector(sapply(document, is.null))
     document[nullmask] <- NA
     return(document)
   }
-
 
   url <- paste0(
     base_url,
@@ -44,9 +42,8 @@ searchdocs <- function(query) {
   docs <- jsonresp$dokumentlista$dokument
 
   # Return data.frame
-  t(data.frame(sapply(docs, clean_document)))
+  t(data.frame(sapply(docs, cleandoc)))
 }
-
 
 
 #' Retrieves document content as HTML string
