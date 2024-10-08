@@ -1,10 +1,11 @@
-library(tm)
 install.packages("httr")
 install.packages("jsonlite")
 install.packages("tm")  # Para análisis de texto si quieres usarlo
 
 library(httr)
 library(jsonlite)
+library(tm)
+
 
 # Define la URL base del API
 base_url <- "http://data.riksdagen.se/dokumentlista/"
@@ -19,6 +20,19 @@ url <- paste0(base_url, "?sok=", query, "&doktyp=&utformat=json&sort=datum&sorto
 
 # Realiza la solicitud GET
 response <- GET(url)
+
+get_list<- function(query, limit) {
+  base_url <- "http://data.riksdagen.se/dokumentlista/"
+  url <- paste0(base_url, "?sok=", query, "&doktyp=&utformat=json&sort=datum&sortorder=desc&antal=", limit)
+  response <- GET(url)
+}
+
+get_document<- function (document_id ) {
+  base_url<-"https://data.riksdagen.se/dokument/"
+  url<-paste0(base_url, document_id)
+  response<- GET(url)
+}
+
 
 
 
