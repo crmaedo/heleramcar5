@@ -115,7 +115,7 @@ library(bslib)
 
 
 
-# Define UI for app that draws a histogram ----
+# Define UI for app.
 ui <- page_sidebar(
   fillable = TRUE,
   # App title
@@ -165,7 +165,7 @@ ui <- page_sidebar(
 server <- function(input, output) {
 
 
-
+  # Render output table from :func:`queryDocuments`
   output$queryResult <- DT::renderDataTable({
 
     queryResult <- queryDocuments(query = input$queryInput)
@@ -179,12 +179,14 @@ server <- function(input, output) {
     )
 
     return(dt)
-
   })
+
+  # Render user selected document ID.
   output$documentID <- renderText({
     paste("You have selected document ID:", input$documentID)
   })
 
+  # Render document text.
   output$documentText <- renderText({
     getDocument(input$documentID)
 
@@ -193,6 +195,3 @@ server <- function(input, output) {
 
 
 shinyApp(ui = ui, server = server)
-
-
-
