@@ -121,6 +121,7 @@ getDocument <- function (document_id) {
 library(shiny)
 library(bslib)
 library(DT)
+library(ggplot2)
 
 
 #' @title Graphical User Interface defintion for app
@@ -164,7 +165,8 @@ appUI <- function() {
         textOutput("documentText"),
         max_height = 500
       ),
-      card(card_header("Word count analysis"))
+      card(card_header("Word count analysis"),
+           plotOutput("wordPlot", width = "100%"))
     ),
 
     # Bottom single card.
@@ -213,6 +215,31 @@ appServer <- function(input, output) {
   # Render document text.
   output$documentText <- renderText({
     getDocument(input$documentID)
+
+  })
+  
+  # Render barplot for word count analysis
+  output$wordPlot <- renderPlot({
+    # Fetch the document text
+    document_text <- getDocument(input$documentID)
+    
+    # Perform word frequency analysis
+    freqDF <- wordsFrequency(document_text)
+    
+    # Filter top 10 words
+    top10 <- freqDF[1:10, ]
+    
+    # Create ggplot barplot
+    ggplot(top10, aes(x = reorder(word, -times), y = times)) +
+      geom_bar(stat = "identity", fill = "#C4D8F3") +
+      #coord_flip() +  # use if we want our plot to have horizontal lines
+      labs(x = "Words", y = "Frequency") +
+      theme_minimal() +
+      theme(
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12)
+      )
+    
 
   })
 }
