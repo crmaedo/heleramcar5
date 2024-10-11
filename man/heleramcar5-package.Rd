@@ -6,7 +6,7 @@
 \alias{heleramcar5-package}
 \title{heleramcar5: Riksdagen SDK}
 \description{
-SDK for Riksdagen database
+SDK for Riksdagen database.
 }
 \author{
 \strong{Maintainer}: Helena Llorens \email{hllor282@student.liu.se}
