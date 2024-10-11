@@ -6,8 +6,17 @@ Authors@R: c(
     person("Helena", "Llorens", email = "hllor282@student.liu.se", role = c("aut", "cre")),
     person("Carmen", "Rodríguez", email = "carro162@student.liu.se", role = "aut"),
     person("Ramón", "Amézquita", email = "ramam120@student.liu.se", role = "aut"))
-Description: SDK for Riksdagen database
+Description: SDK for Riksdagen database.
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.2
 License: MIT + file LICENSE
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports:
+  methods,
+  httr2,
+  xml2,
+  shiny,
+  DT

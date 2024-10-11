@@ -16,5 +16,5 @@ data.frame
 Searches documents in the Riksdagen database
 }
 \examples{
-result <- queryDocs(query = "budget")
+result <- queryDocuments(query = "budget")
 }

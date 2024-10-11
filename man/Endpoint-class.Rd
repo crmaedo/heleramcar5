@@ -15,3 +15,7 @@ Executes http requests against the specified URL.
 }}
 
 
+\examples{
+endpoint <- Endpoint("http://my-api-url.com")
+
+}

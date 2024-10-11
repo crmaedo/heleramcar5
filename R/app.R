@@ -5,6 +5,13 @@ library(xml2)
 #'
 #' Executes http requests against the specified URL.
 #'
+#' @examples
+#' endpoint <- Endpoint("http://my-api-url.com")
+#'
+#' @import methods
+#' @importFrom httr2 request req_perform
+#' @export Endpoint
+#' @exportClass Endpoint
 #' @field base_url character. Base URL.
 Endpoint <- setRefClass(
   "Endpoint",
@@ -48,18 +55,17 @@ wordsFrequency <- function(text) {
 #' Searches documents in the Riksdagen database
 #'
 #' @param query Search query (e.g., "budget").
-#'
 #' @return data.frame
+#'
+#' @importFrom httr2 resp_body_json
 #' @export
 #' @examples
-#' result <- queryDocs(query = "budget")
+#' result <- queryDocuments(query = "budget")
 queryDocuments <- function(query) {
 
   include <- c(
-    "traff", "domain", "database", "datum", "id",
-    "publicerad", "systemdatum", "undertitel",
-    "kalla", "kall_id", "dok_id", "lang",
-    "titel", "dokumentnamn", "score"
+    "traff", "domain", "database", "datum", "id", "publicerad",
+    "systemdatum","dok_id", "titel", "score"
     )
 
 
@@ -71,7 +77,7 @@ queryDocuments <- function(query) {
   }
 
   # Construct URL and make api call.
-  url <- paste0("?sok=", query, "&utformat=json&sort=datum&sortorder=desc")
+  url <- paste0("?sok=", query, "&doktyp=SFS&utformat=json&sort=datum&sortorder=desc")
   jsonResp <- url |> queryEndpoint$make_api_call() |> resp_body_json()
 
   # Extract list of documents from json response.
@@ -85,12 +91,14 @@ queryDocuments <- function(query) {
 #' Retrieves document content as HTML string
 #'
 #' @param document_id Document id
-#'
 #' @return character
-#' @export
-#' @references https://www.riksdagen.se/sv/dokument-och-lagar/riksdagens-oppna-data/anvandarstod/sa-fungerar-dokument-id/
 #' @examples
 #' document <- getDocument(document_id = "sfs-2016-1091")
+#'
+#' @export
+#' @importFrom httr2 resp_body_xml
+#' @importFrom xml2 as_list
+#' @references https://www.riksdagen.se/sv/dokument-och-lagar/riksdagens-oppna-data/anvandarstod/sa-fungerar-dokument-id/
 getDocument <- function (document_id) {
 
   resp <- docEndpoint$make_api_call(url = document_id)
@@ -112,64 +120,80 @@ getDocument <- function (document_id) {
 
 library(shiny)
 library(bslib)
+library(DT)
 
 
+#' @title Graphical User Interface defintion for app
+#'
+#' @description appGUI provides a graphical user interface to this app.
+#' @return Shiny UI object.
+#'
+#' @importFrom shiny h3 textInput textOutput helpText code
+#' @export
+appUI <- function() {
 
-# Define UI for app.
-ui <- page_sidebar(
-  fillable = TRUE,
-  # App title
-  title = "Wordcount Analysis for Riksdag's documents",
+  ui <- page_sidebar(
+    fillable = TRUE,
+    # App title
+    title = "Wordcount Analysis for Riksdag's documents",
 
-  # Sidebar panel for text input.
-  sidebar = sidebar(
-    h3('Start here'),
+    # Sidebar panel for text input.
+    sidebar = sidebar(
+      h3('Start here'),
 
-    textInput("queryInput", "Search a document"),
+      textInput("queryInput", "Search a document"),
 
-    helpText("Insert document ID to trigger the word count analysis."),
-    textInput("documentID", "Insert document ID"),
+      helpText("Insert document ID to trigger the word count analysis."),
+      textInput("documentID", "Document ID"),
 
-    card_header('About'),
-    helpText(
-    "
-    This app demonstrates a simple workflow of fethcing data
-    from SVERIGES RIKSGAG's database and displaying a simple wordcount analysis.
-    You can install it in the usual way from your R console:
-    "
+      card_header('About'),
+      helpText(
+        "This app demonstrates a simple workflow of fethcing data from
+        SVERIGES RIKSGAG's database and displaying a simple wordcount analysis.
+        You can install it in the usual way from your R console: "
+      ),
+      code('devtools::install_github(crmaedo, heleramcar5)')
     ),
 
-    code('devtools::install_github(crmaedo, heleramcar5)')
-  ),
 
-
-  layout_columns(
-
-    card(card_header("Document text"),
-         textOutput("documentID"),
-         textOutput("documentText"),
-         max_height = 500
+    # Upper double column layout.
+    layout_columns(
+      card(
+        card_header("Document text"),
+        textOutput("documentID"),
+        textOutput("documentText"),
+        max_height = 500
+      ),
+      card(card_header("Word count analysis"))
     ),
 
-    card(card_header("Word count analysis"))
-  ),
-
-  card(card_header("Search results"),
-       DT::dataTableOutput("queryResult")
+    # Bottom single card.
+    card(
+      card_header("Search results"),
+      DT::dataTableOutput("queryResult")
+    )
   )
-)
+
+  return(ui)
+}
 
 
-
-# Define server logic required.
-server <- function(input, output) {
+#' Define Shiny server logic.
+#'
+#' @param input Shiny input environment
+#' @param output Shiny output environment
+#'
+#' @importFrom shiny renderText
+#' @importFrom DT renderDataTable datatable
+#' @export
+appServer <- function(input, output) {
 
 
   # Render output table from :func:`queryDocuments`
-  output$queryResult <- DT::renderDataTable({
+  output$queryResult <- renderDataTable({
 
     queryResult <- queryDocuments(query = input$queryInput)
-    dt <- DT::datatable(
+    dt <- datatable(
       queryResult,
       options = list(scrollX = TRUE,
                      pageLength = 10,
@@ -194,4 +218,14 @@ server <- function(input, output) {
 }
 
 
-shinyApp(ui = ui, server = server)
+#' Creates Shiny app.
+#'
+#' @export
+createShiny <- function() {
+  shinyApp(ui = appUI(), server = appServer)
+}
+
+
+createShiny()
+
+

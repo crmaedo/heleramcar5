@@ -17,6 +17,7 @@ Retrieves document content as HTML string
 }
 \examples{
 document <- getDocument(document_id = "sfs-2016-1091")
+
 }
 \references{
 https://www.riksdagen.se/sv/dokument-och-lagar/riksdagens-oppna-data/anvandarstod/sa-fungerar-dokument-id/
