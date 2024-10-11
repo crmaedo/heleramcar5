@@ -4,7 +4,7 @@
 
 # 732A94 Advanced Programming in R - Linköping University
 
-Computer Lab 5: Implementation of a Shiny app for fetching data from a REST API.
+Computer Lab 5: Implementation of a SDK for fetching data from Sweden Riksdagen database.
 
 # Names - Student Id
 
