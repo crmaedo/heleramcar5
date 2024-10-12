@@ -1,9 +1,15 @@
-<!-- badges: start -->
-[![R-CMD-check](https://github.com/crmaedo/heleramcar5/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/crmaedo/heleramcar5/actions/workflows/R-CMD-check.yaml)
-<!-- badges: end -->
+---
+title: "heleramcar5"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{heleramcar5}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
+---
 
-# `heleramcar5` Package
+# `heleramcar5` Package Vignette
 
 
 ## Overview
@@ -16,14 +22,16 @@ In this vignette, we will walk through the core functionality of the package, in
 - Retrieving and processing document content
 - Counting word frequencies in text data
 
+
 ## Installation
 
 You can install the `heleramcar5` package by running:
 
 ```r
 # Install the heleramcar5 package
-devtools::install_github("your-repo/heleramcar5")
+devtools::install_github("crmaedo5/heleramcar5")
 ```
+
 
 Once installed, load the package:
 
