@@ -22,7 +22,7 @@ You can install the `heleramcar5` package by running:
 
 ```r
 # Install the heleramcar5 package
-devtools::install_github("your-repo/heleramcar5")
+devtools::install_github("crmaedo/heleramcar5")
 ```
 
 Once installed, load the package:
